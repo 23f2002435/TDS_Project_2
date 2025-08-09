@@ -7,7 +7,7 @@ An intelligent data analysis agent powered by Large Language Models that can aut
 - **Multi-source Data Processing**: Handles data from web URLs, uploaded files (CSV, Excel, JSON, text), and direct text input
 - **Intelligent Task Breakdown**: Uses LLM to break down complex user questions into structured analysis plans
 - **Automated Code Generation**: Generates Python code for data analysis based on questions and data metadata
-- **Safe Code Execution**: Executes generated code in a controlled environment with security restrictions
+- **Isolated Code Execution**: Executes generated code with subprocess isolation, timeouts, and output size limits
 - **Error Correction Loop**: Automatically fixes code errors using LLM feedback
 - **REST API Interface**: Simple HTTP API for integration with other applications
 
@@ -32,6 +32,8 @@ The project follows a modular architecture with the following components:
 
 1. Clone the repository:
 ```bash
+git clone <YOUR_REPO_URL>
+cd TDS_Project_2
 ```
 
 2. Create a virtual environment:
@@ -89,6 +91,7 @@ Create a `.env` file and configure the following variables:
 - `MAX_RETRIES` – Number of retries for LLM calls (default: 3)
 - `RETRY_DELAY` – Base delay between retries in seconds (default: 1)
 - `CODE_EXECUTION_TIMEOUT` – Sandbox timeout in seconds (default: 120)
+- `MAX_OUTPUT_LENGTH` – Max size of captured stdout in bytes (default: 10000)
 - `PORT`, `DEBUG` – Flask server settings
 
 ## API Usage
@@ -110,18 +113,18 @@ Response:
 ### Data Analysis
 
 ```bash
-POST /analyze
+POST /api
 Content-Type: multipart/form-data
 ```
 
 Parameters:
-- `questions` (file, required): Text file containing questions to analyze
+- `questions` or `questions.txt` (file, required): Text file containing questions to analyze
 - `url` (form field, optional): URL to analyze web data
 - Additional files (optional): Data files to analyze (CSV, Excel, JSON, text)
 
 Example using curl:
 ```bash
-curl -X POST http://localhost:5000/analyze \
+curl -X POST http://localhost:5000/api \
   -F "questions=@questions.txt" \
   -F "data=@dataset.csv" \
   -F "url=https://example.com/data"
@@ -153,11 +156,11 @@ Response:
 
 ## Security Features
 
-- **Code Sandboxing**: Generated code runs in isolated environment
-- **Import Restrictions**: Only safe libraries are allowed
-- **Function Blocking**: Dangerous functions are blocked
-- **Timeout Protection**: Code execution has time limits
-- **Input Validation**: All inputs are validated and sanitized
+- **Subprocess Isolation**: Generated code runs in a separate Python process
+- **Timeout Protection**: Execution is terminated after a configurable timeout
+- **Output Truncation**: Excessive stdout is truncated to a safe length
+- **Syntax Pre-check**: Code is prepared and validated before execution
+- Note: Deep security checks are currently relaxed in `code_executor.py` and can be re-enabled as needed
 
 ## Supported Data Sources
 
@@ -185,25 +188,24 @@ Response:
 
 ### Project Structure
 ```
-Project_TDS 2 2/
-├── main.py                 # Main server
-├── orchestrator.py         # Central controller
-├── llm_handler.py         # LLM communication
-├── tool_executor.py       # Tool dispatcher
-├── code_executor.py       # Code execution
-├── tools/                 # Specialized tools
+TDS_Project_2/
+├── main.py                 # Main server and API endpoints
+├── orchestrator.py         # Central controller/workflow
+├── llm_handler.py          # Gemini client wrapper
+├── tool_executor.py        # Tool dispatcher + built-in data_reader
+├── code_executor.py        # Isolated code execution
+├── tools/                  # Specialized tools
 │   ├── __init__.py
 │   ├── web_scraper.py
 │   └── data_inspector.py
-├── prompts/               # LLM prompt templates
+├── prompts/                # LLM prompt templates
 │   ├── 1_task_breakdown.txt
 │   ├── 2_code_generation.txt
 │   └── 3_code_correction.txt
-├── outputs/               # Temporary files
-├── requirements.txt       # Dependencies
-├── Dockerfile            # Container configuration
-
-└── README.md            # This file
+├── outputs/                # Generated scripts and artifacts
+├── requirements.txt        # Dependencies
+├── Dockerfile              # Container configuration
+└── README.md               # This file
 ```
 
 ### Adding New Tools
@@ -212,6 +214,7 @@ Project_TDS 2 2/
 2. Implement the required interface with an `execute()` function
 3. Add the tool to `tool_executor.py`
 4. Update the tool registry
+5. Note: A built-in `data_reader` is provided in `tool_executor.py` for CSV/Excel/JSON/text uploads
 
 ### Customizing Prompts
 
@@ -233,11 +236,10 @@ Edit the prompt templates in the `prompts/` directory to customize LLM behavior:
 
 The application logs important events and errors. Check the console output for debugging information.
 
-### Testing
+### Health Check
 
-Run tests with:
 ```bash
-pytest tests/
+GET /health
 ```
 
 ## Contributing
