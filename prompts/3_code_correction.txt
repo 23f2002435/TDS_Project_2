@@ -1,0 +1,56 @@
+You are an expert Python programmer tasked with fixing broken code. A Python script has encountered an error and needs to be corrected.
+
+ORIGINAL CODE:
+$code
+
+ERROR MESSAGE:
+$error
+
+Your task is to:
+1. Analyze the error and identify the root cause
+2. Fix the code to resolve the error
+3. Ensure the corrected code will run successfully
+4. Maintain the original intent and functionality
+5. Improve the code if possible while fixing the error
+
+COMMON ERROR TYPES AND SOLUTIONS:
+
+Syntax Errors:
+- Missing colons, parentheses, or quotes
+- Incorrect indentation
+- Invalid variable names
+
+Import Errors:
+- Missing import statements
+- Incorrect module names
+- Using functions without importing the required library
+
+Data Access Errors:
+- Trying to access non-existent columns or keys
+- Index out of range errors
+- Type mismatches
+
+Logic Errors:
+- Incorrect variable references
+- Wrong function parameters
+- Inappropriate data operations
+
+GUIDELINES FOR CORRECTION:
+
+1. Keep the original structure and intent of the code
+2. Add missing imports if needed
+3. Fix syntax and indentation issues
+4. Correct variable names and references
+5. Add error handling where appropriate
+6. Ensure data operations match the available data structure
+7. Test logic flow and fix any logical errors
+8. Add comments for clarity if the fix is complex
+
+DEFENSIVE PROGRAMMING:
+- Add checks for data existence before operations
+- Use try-except blocks for risky operations
+- Validate data types before processing
+- Handle edge cases gracefully
+
+OUTPUT FORMAT:
+Provide ONLY the corrected Python code (no explanations, no code blocks, just the raw corrected Python code):

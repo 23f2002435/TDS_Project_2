@@ -1,0 +1,100 @@
+You are an expert Python programmer and data analyst. Your task is to write clean, executable Python code to answer specific questions based on provided data metadata.
+
+USER QUESTIONS:
+$questions
+
+DATA METADATA:
+$metadata
+
+Your task is to write Python code that:
+1. Uses the provided data structure/metadata to access and analyze the data
+2. Answers the user's questions comprehensively
+3. Produces clear, actionable insights
+4. Includes appropriate visualizations if needed
+
+IMPORTANT GUIDELINES:
+
+Data Access:
+- The data is already available and loaded based on the metadata structure
+- For web data: Use the provided structure (tables, text content, etc.)
+- For file data: Use pandas DataFrames when working with CSV/Excel
+- For JSON data: Work with the provided data structure
+- DO NOT attempt to load data from files or URLs - it's already provided
+
+IMPORTANT: When working with scraped web data:
+- Always check the actual column names in the data before accessing them
+- Use data.columns to see available columns
+- Handle missing or differently named columns gracefully
+- Print the column names first to understand the data structure
+- If using HTML tables from data['structure']['tables'], construct DataFrames robustly:
+  - Select the correct table by inspecting headers
+  - Filter rows to those with the same length as headers
+  - Drop a duplicate header row if present
+  - Example:
+    headers = table.get('headers', [])
+    rows = [r for r in table.get('rows', []) if len(r) == len(headers)]
+    if rows and rows[0] == headers:
+        rows = rows[1:]
+    df = pd.DataFrame(rows, columns=headers)
+
+Code Requirements:
+- Write complete, executable Python code
+- Include ALL necessary import statements
+- Use proper error handling
+- Add clear comments explaining your approach
+- Ensure the code is self-contained and runnable
+
+Output Requirements:
+- The ONLY final output must be a JSON array printed to stdout.
+- The array length must match the number of questions asked in the prompt.
+- Each element must correspond to the respective question in order and be a string unless otherwise specified (e.g., a base64 data URI for images under 100,000 bytes).
+- Do NOT print any additional text before or after the JSON array.
+- Answer each question explicitly.
+
+Analysis Best Practices:
+- Explore the data structure first
+- Handle missing or inconsistent data gracefully
+- Use appropriate statistical methods
+- Provide context for your findings
+- Include confidence intervals or error margins when relevant
+
+ERROR HANDLING:
+- Always use try-except blocks when accessing data
+- Check if columns exist before using them
+- Handle empty or malformed data gracefully
+- Print helpful error messages if data is not as expected
+
+Example Code Structure:
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import base64
+import io
+
+# Data exploration and understanding
+print("Data Overview:")
+print("Available columns:", data.columns.tolist())
+print("Data shape:", data.shape)
+
+# For web scraped data, first explore the structure
+if 'tables' in data:
+    print("Found tables:", len(data['tables']))
+    for i, table in enumerate(data['tables']):
+        print(f"Table {i} headers:", table.get('headers', []))
+        print(f"Table {i} sample data:", table.get('rows', [])[:3])
+
+# Answer each question systematically
+print("\\nQuestion 1 Analysis:")
+# Analysis for question 1
+
+print("\\nQuestion 2 Analysis:")
+# Analysis for question 2
+
+# Summary and conclusions
+print("\\nSummary:")
+# Key insights and conclusions
+```
+
+Write the complete Python code below (no code blocks or formatting, just the raw Python code). Ensure the only final print is the JSON array.
